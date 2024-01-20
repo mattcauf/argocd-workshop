@@ -146,7 +146,9 @@ The app is now out of sync. For enabling selfhealing do
 
 Delete the snake deployment again and check what is happening.
 
-#### Make a commit 
+#### Make a commit
+The owner of the git repo will commit a change in the main branch
 
-### Exercice
-Can you manage argocd 
+### Assignment
+Can make argocd deployment managed by argocd ?
+Deployment files are located in apps/assignment
