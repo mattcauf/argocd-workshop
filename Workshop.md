@@ -1,5 +1,5 @@
 # Workshop
-The goal is to setup a gitops environment perform a deployment of a stateless app and a day 0 deployment of a statefull app.
+The goal is to setup a gitops environment perform a deployment of a stateless app.
 We will use a kubernetes cluster and argocd.
 
 
@@ -15,19 +15,31 @@ wsl --install
 
 ### Install argoCd
 ```
-kubectl create namespace argocdd
-kubectl apply -n argocdd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-watch "kubectl get pod -n argocdd"
-kubectl port-forward service/argocd-server 8080:80 -n argocdd
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl get pod -n argocd
+kubectl port-forward service/argocd-server 8080:80 -n argocd
 
 ```
 
-Get argocd password
+#### Get argocd password Unix
 ```
-argoPass=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-echo $argoPass
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
-make Argocd an admin of your cluster
+#### Get argocd password Windows
+```
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
+```
+take the output and decode it by using the following website
+https://www.base64decode.org/
+
+#### make Argocd an admin of your cluster
+
+```
+kubectl apply -f .\apps\argocd\role.yaml -n argocd
+```
+
+This apply the following yaml.
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -77,8 +89,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source: 
-    path: apps/bgd/overlays/bgd
-    repoURL: https://github.com/redhat-developer-demos/openshift-gitops-examples
+    path: apps/snake/base/
+    repoURL: https://github.com/mattcauf/argocd-workshop.git
     targetRevision: minikube
   syncPolicy:
     automated:
