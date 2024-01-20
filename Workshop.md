@@ -81,17 +81,17 @@ click on new app then edit Yaml and paste the following
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bgd-app
+  name: snake-app
   namespace: argocd
 spec:
   destination:
-    namespace: bgd
+    namespace: snake
     server: https://kubernetes.default.svc
   project: default
   source: 
     path: apps/snake/base/
     repoURL: https://github.com/mattcauf/argocd-workshop.git
-    targetRevision: minikube
+    targetRevision: main
   syncPolicy:
     automated:
       prune: true

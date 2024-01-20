@@ -11,4 +11,4 @@ commonLabels:
 configMapGenerator:
   - name: websitepage
     files:
-      - ./index.html
+      - ./files/index.html
