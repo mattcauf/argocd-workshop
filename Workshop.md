@@ -99,4 +99,10 @@ spec:
     syncOptions:
     - CreateNamespace=true
 ```
+
+
+
 kubectl port-forward service/snake 8080:80 -n snake
+
+kubectl -n argocdd patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/0/value", "value":"blue"}]'
+kubectl -n argocdd patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/1/value", "value":"purple"}]'
