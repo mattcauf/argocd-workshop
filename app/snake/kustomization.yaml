@@ -1,0 +1,14 @@
+#namespace: snake
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+commonLabels:
+  app: snake
+  type: webapp
+
+configMapGenerator:
+  - name: websitepage
+    files:
+      - ./index.html

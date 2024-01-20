@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snake
+spec:
+  kubectl -n argocdd patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/0/value", "value":"blue"}]'
+  kubectl -n argocdd patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/1/value", "value":"purple"}]'
+  
+  replicas: 1
+  template:
+    spec:
+      initContainers:
+        - name: init-container
+          image: nginx
+          env:
+            - name: SNAKE_BODY
+              value: "red"
+            - name: APPLE_COLOR
+              value: "blue"
+          command:
+            - bash
+            - -c
+          args:
+            - |
+              cp /tmp/index.html /workspace/
+              cd /workspace
+              sed -i "s/context.fillStyle = 'snake';/context.fillStyle = '${SNAKE_BODY}';/g" index.html
+              sed -i "s/context.fillStyle = 'apple';/context.fillStyle = '${APPLE_COLOR}';/g" index.html
+          volumeMounts:
+            - mountPath: /tmp/index.html
+              name: pages
+              subPath: index.html
+            - mountPath: /workspace/
+              name: nginx-conf
+
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/index.html
+              name: nginx-conf
+              subPath: index.html
+      volumes:
+        - name: pages
+          configMap:
+            name: websitepage
+        - name: nginx-conf
+          emptyDir: {}
+
