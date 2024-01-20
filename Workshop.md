@@ -14,13 +14,15 @@ wsl --install
 ## Argo cd
 
 ### Install argoCd
+Open a terminal
 ```
 kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.8.9/manifests/install.yaml
 kubectl get pod -n argocd
 kubectl port-forward service/argocd-server 8080:80 -n argocd
 
 ```
+open a new terminal tab.
 
 #### Get argocd password Unix
 ```
@@ -77,6 +79,7 @@ the username is admin
 
 ### Create an app
 click on new app then edit Yaml and paste the following 
+![](./img/workshop/argoUI.png)
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -99,10 +102,51 @@ spec:
     syncOptions:
     - CreateNamespace=true
 ```
+A new window will open with the newly created ressources.
+
+This deployment contains 3 ressources:
+- 1 configmap
+- 1 service
+- 1 deployment
 
 
+### let's play with argocd
+#### Introduce a diff in the running config
+```
+kubectl port-forward service/snake-svc 8090:80 -n snake
+```
+open a new terminal tab.
 
-kubectl port-forward service/snake 8080:80 -n snake
+go to http://localhost:8090
 
-kubectl -n argocdd patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/0/value", "value":"blue"}]'
-kubectl -n argocdd patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/1/value", "value":"purple"}]'
+
+know we will change some ressources
+```
+kubectl -n snake patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/0/value", "value":"blue"}]'
+kubectl -n snake patch deploy/snake --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/initContainers/0/env/1/value", "value":"purple"}]'
+```
+
+Snake will restart and the color should have changed. you may need to rerun 
+```
+kubectl port-forward service/snake-svc 8090:80 -n snake
+```
+
+Go back to argocd and open snake app.
+the app is out of sync, click on sync button.
+![](./img/workshop/theappisoutofSync.png)
+
+#### Make the app self heal
+
+Delete the deployment
+
+![](./img/workshop/delete.png)
+
+The app is now out of sync. For enabling selfhealing do
+![](./img/workshop/selfheal.png)
+
+Delete the snake deployment again and check what is happening.
+
+#### Make a commit 
+
+### Exercice
+Can you manage argocd 
