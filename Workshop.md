@@ -38,8 +38,7 @@ https://www.base64decode.org/
 #### make Argocd an admin of your cluster
 
 ```
-kubectl apply -f .\apps\argocd\role.yaml -n argocd
-```
+kubectl apply -f ./apps/argocd/base/ -n argocd ```
 
 This apply the following yaml.
 ```yaml
